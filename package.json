@@ -1,12 +1,15 @@
 {
   "name": "palsonexample",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": {
+    "name": "Pavel Nosovets",
+    "email": "pavel.nosovets@codefresh.io"
+  },
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1"
