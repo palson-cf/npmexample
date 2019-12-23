@@ -1,0 +1,99 @@
+version: '1.0'
+mode: parallel
+stages:
+  - Prepare
+  - Test and build
+  - Release
+steps:
+
+  main_clone:
+    stage: Prepare
+    title: 'Cloning main repository...'
+    type: git-clone
+    repo: ${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}
+    revision: ${{CF_BRANCH}}
+    git: github
+
+  install_dependencies:
+    stage: Prepare
+    title: 'Installing dependencies'
+    image: node:lts-alpine
+    working_directory: ${{main_clone}}
+    commands:
+        - yarn install --frozen-lockfile
+
+  lint:
+    title: 'Running linting'
+    stage: Test and build
+    image: node:lts-alpine
+    working_directory: ${{main_clone}}
+    commands:
+        - yarn lint
+
+  unit_tests:
+    image: node:lts-alpine
+    stage: Test and build
+    working_directory: ${{main_clone}}
+    commands:
+        - yarn test
+
+  build_step:
+    title: "Building image"
+    stage: Test and build
+    type: build
+    image_name: ${{DOCKERHUB_ACCOUNT}}/${{IMAGE_NAME}}
+    working_directory: ${{main_clone}}
+
+  push_to_registry_branch:
+    title: "Pushing image to registry with branch name"
+    stage: Release
+    type: push
+    candidate: ${{build_step}}
+    registry: "dockerhub"
+    tag: ${{CF_BRANCH_TAG_NORMALIZED}}
+    when:
+      steps:
+        - name: unit_tests
+          on:
+          - success
+
+  add_git_tag:
+    title: "Add Git tag"
+    stage: Release
+    image: codefresh/cli
+    commands:
+    - 'apk update && apk add jq'
+    - 'export PACKAGE_VERSION=$(jq -r ".version" package.json)'
+    - "echo Current version: $PACKAGE_VERSION"
+    - "cf_export PACKAGE_VERSION"
+    - "git tag $PACKAGE_VERSION"
+    when:
+      branch:
+        only: [ master ]
+      steps:
+        - name: build_step
+          on:
+          - success
+
+  create_github_release:
+    stage: Release
+    title: "Create github release"
+    image: codefresh/cli-build
+    commands:
+    - 'curl --fail -X POST -d ''{"tag_name":"v${{PACKAGE_VERSION}}","target_commitish":"${{CF_REVISION}}","name":"${{CF_REPO_NAME}} v${{PACKAGE_VERSION}}"}'' -H "Content-Type: application/json" -H "Authorization: token ${{GITHUB_TOKEN}}" https://api.github.com/repos/${{CF_REPO_OWNER/${{CF_REPO_NAME}}/releases'
+    when:
+      branch:
+        only: [ master ]
+
+  push_to_registry_dockerhub:
+    title: "Pushing image to dockerhub registry"
+    stage: Release
+    type: push
+    registry: "dockerhub"
+    candidate: ${{build_step}}
+    image_name: "${{DOCKERHUB_ACCOUNT}}/${{CF_REPO_NAME}}"
+    tag: ${{PACKAGE_VERSION}}
+    when:
+      branch:
+        only: [ master ]
+
