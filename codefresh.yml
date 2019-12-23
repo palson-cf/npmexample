@@ -44,7 +44,7 @@ steps:
     image_name: ${{DOCKERHUB_ACCOUNT}}/${{IMAGE_NAME}}
     working_directory: ${{main_clone}}
 
-  push_to_registry_branch:
+  push_to_dev_image:
     title: "Pushing image to registry with branch name"
     stage: Release
     type: push
@@ -80,19 +80,22 @@ steps:
     title: "Create github release"
     image: codefresh/cli-build
     commands:
-    - 'curl --fail -X POST -d ''{"tag_name":"v${{PACKAGE_VERSION}}","target_commitish":"${{CF_REVISION}}","name":"${{CF_REPO_NAME}} v${{PACKAGE_VERSION}}"}'' -H "Content-Type: application/json" -H "Authorization: token ${{GITHUB_TOKEN}}" https://api.github.com/repos/${{CF_REPO_OWNER/${{CF_REPO_NAME}}/releases'
+    - echo curl --fail -X POST -d "{\"tag_name\":\"v${{PACKAGE_VERSION}}\",\"target_commitish\":\"${{CF_REVISION}}\",\"name\":\"${{CF_REPO_NAME}} v${{PACKAGE_VERSION}}\"}" -H "Content-Type: application/json" -H "Authorization: token ${{GITHUB_TOKEN}}" https://api.github.com/repos/${{CF_REPO_OWNER/${{CF_REPO_NAME}}/releases
+    - 'curl --fail -X POST -d "{\"tag_name\":\"v${{PACKAGE_VERSION}}\",\"target_commitish\":\"${{CF_REVISION}}\",\"name\":\"${{CF_REPO_NAME}} v${{PACKAGE_VERSION}}\"}" -H "Content-Type: application/json" -H "Authorization: token ${{GITHUB_TOKEN}}" https://api.github.com/repos/${{CF_REPO_OWNER/${{CF_REPO_NAME}}/releases'
     when:
       branch:
         only: [ master ]
 
-  push_to_registry_dockerhub:
+  push_release_image:
     title: "Pushing image to dockerhub registry"
     stage: Release
     type: push
     registry: "dockerhub"
     candidate: ${{build_step}}
     image_name: "${{DOCKERHUB_ACCOUNT}}/${{CF_REPO_NAME}}"
-    tag: ${{PACKAGE_VERSION}}
+    tags:
+      - ${{PACKAGE_VERSION}}
+      - latest
     when:
       branch:
         only: [ master ]
