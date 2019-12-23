@@ -15,7 +15,7 @@ steps:
     git: gh
 
 #####################
-  create_github_release:
+  test_create_github_release:
     stage: Release
     title: "Create github release"
     image: codefresh/cli-build
