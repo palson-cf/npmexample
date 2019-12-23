@@ -20,6 +20,7 @@ steps:
     working_directory: ${{main_clone}}
     commands:
         - env
+        - ls -la  ~/
         - yarn install --frozen-lockfile
 
   lint:
