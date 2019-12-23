@@ -16,11 +16,11 @@ steps:
 
 #####################
   test_create_github_release:
-    stage: Release
+    stage: Prepare
     title: "Create github release"
     image: codefresh/cli-build
     commands:
-    - 'echo curl --fail -X POST -d "{\"tag_name\":\"v${{PACKAGE_VERSION}}\",\"target_commitish\":\"${{CF_REVISION}}\",\"name\":\"${{CF_REPO_NAME}} v${{PACKAGE_VERSION}}\"}" -H "Content-Type: application/json" -H "Authorization: token ${{GITHUB_TOKEN}}" "https://api.github.com/repos/${{CF_REPO_OWNER/${{CF_REPO_NAME}}/releases"'
+    - 'echo curl --fail -X POST -d "{\"tag_name\":\"v${{PACKAGE_VERSION}}\",\"target_commitish\":\"${{CF_REVISION}}\",\"name\":\"${{CF_REPO_NAME}} v${{PACKAGE_VERSION}}\"}" -H "Content-Type: application/json" -H "Authorization: token ${{GITHUB_TOKEN}}" "https://api.github.com/repos/${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}/releases"'
     # - 'curl --fail -X POST -d "{\"tag_name\":\"v${{PACKAGE_VERSION}}\",\"target_commitish\":\"${{CF_REVISION}}\",\"name\":\"${{CF_REPO_NAME}} v${{PACKAGE_VERSION}}\"}" -H "Content-Type: application/json" -H "Authorization: token ${{GITHUB_TOKEN}}" https://api.github.com/repos/${{CF_REPO_OWNER/${{CF_REPO_NAME}}/releases'
     when:
       branch:
