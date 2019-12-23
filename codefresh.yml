@@ -19,6 +19,7 @@ steps:
     image: node:lts-alpine
     working_directory: ${{main_clone}}
     commands:
+        - env
         - yarn install --frozen-lockfile
 
   lint:
