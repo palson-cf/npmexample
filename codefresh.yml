@@ -16,12 +16,13 @@ steps:
   install_dependencies:
     stage: Prepare
     title: 'Installing dependencies'
-    image: node:lts-alpine
+    # image: node:lts-alpine
+    image: alpine:latest
     working_directory: ${{main_clone}}
     commands:
         - env
         - 'ls -la  ~/'
-        - yarn install --frozen-lockfile
+        # - yarn install --frozen-lockfile
 
   lint:
     title: 'Running linting'
