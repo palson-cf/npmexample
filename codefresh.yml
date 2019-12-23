@@ -18,10 +18,10 @@ steps:
     title: 'Installing dependencies'
     # image: node:lts-alpine
     image: alpine:latest
-    working_directory: ${{main_clone}}
+    # working_directory: ${{main_clone}}
     commands:
         - env
-        - 'ls -la  ~/'
+        # - 'ls -la  ~/'
         # - yarn install --frozen-lockfile
 
   lint:
