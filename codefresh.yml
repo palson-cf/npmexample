@@ -1,5 +1,5 @@
 version: '1.0'
-mode: parallel
+# mode: parallel
 stages:
   - Prepare
   - Test and build
@@ -12,7 +12,7 @@ steps:
     type: git-clone
     repo: ${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}
     revision: ${{CF_BRANCH}}
-    git: github
+    git: gh
 
   install_dependencies:
     stage: Prepare
