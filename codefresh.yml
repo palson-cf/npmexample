@@ -4,6 +4,12 @@ stages:
   - Test and build
   - Release
 steps:
+  test:
+    stage: Prepare
+    image: 'alpine:latest'
+    commands:
+      - echo "test"
+
   skip_ci:
     stage: Prepare
     image: alpine
