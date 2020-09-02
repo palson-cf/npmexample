@@ -10,9 +10,9 @@ steps:
     commands:
       - exit 0
     when:
-    condition:
-      any:
-        noSkipCiInCommitMessage: 'includes(lower("${{CF_COMMIT_MESSAGE}}"), "skip ci") == false'
+      condition:
+        any:
+          noSkipCiInCommitMessage: 'includes(lower("${{CF_COMMIT_MESSAGE}}"), "skip ci") == false'
 
   main_clone:
     stage: Prepare
